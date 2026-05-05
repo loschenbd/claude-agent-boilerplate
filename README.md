@@ -225,6 +225,6 @@ If a session ends mid-task, the Director writes `plans/<task-slug>/progress.md` 
 
 ## Credits
 
-The QRSPI methodology and this boilerplate were developed by [Benjamin Loschen](https://github.com/loschenbd).
+The QRSPI methodology is inspired by the work of [Dex Horthy](https://github.com/dexhorthy) and [HumanLayer](https://github.com/humanlayer) on structured human-in-the-loop AI agent workflows. This boilerplate is [Benjamin Loschen](https://github.com/loschenbd)'s adaptation of those ideas for Claude Code.
 
 Built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) by [Anthropic](https://www.anthropic.com) — the agentic coding tool that powers the `/research` and `/d` commands, the Director, and all specialist agents in this workflow.
