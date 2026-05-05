@@ -22,6 +22,45 @@ A GitHub template for wiring up the **QRSPI multi-agent workflow** in any codeba
 
 ---
 
+## How the agents fit together
+
+```mermaid
+flowchart TD
+    User((You))
+    User -->|"/research"| ResearchCmd[research.md command]
+    User -->|"/d"| DCmd[d.md command]
+    DCmd --> Director
+    ResearchCmd -.writes.-> Plans[(plans/task-slug/<br/>research.md)]
+    Director[Director]
+    Director -.reads.-> Registry[(registry.md)]
+    Director -.reads/writes.-> Plans
+    Director -.calls when needed.-> Comms[Comms Agent<br/>status updates]
+    Director --> M1[Engineering<br/>Manager]
+    Director --> M2[Data<br/>Manager]
+    Director --> M3[Quality<br/>Manager]
+    M1 --> S1a[Frontend<br/>Specialist]
+    M1 --> S1b[Backend<br/>Specialist]
+    M2 --> S2a[DB<br/>Specialist]
+    M2 --> S2b[Migration<br/>Specialist]
+    M3 --> S3a[Type<br/>Reviewer]
+
+    classDef cmd fill:#e0f2ff,stroke:#0066cc,color:#000
+    classDef director fill:#ffe0e0,stroke:#cc0000,color:#000
+    classDef manager fill:#fff0d0,stroke:#cc8800,color:#000
+    classDef specialist fill:#e0ffe0,stroke:#008800,color:#000
+    classDef support fill:#f0e0ff,stroke:#6600cc,color:#000
+
+    class ResearchCmd,DCmd cmd
+    class Director director
+    class M1,M2,M3 manager
+    class S1a,S1b,S2a,S2b,S3a specialist
+    class Comms,Registry,Plans support
+```
+
+The team structure above is just an example — you define your own teams and specialists in `registry.md`. The Director, Comms Agent, and command structure stay the same.
+
+---
+
 ## The QRSPI Workflow
 
 QRSPI is a structured pattern for tackling complex engineering tasks with AI agents:
@@ -34,6 +73,35 @@ QRSPI is a structured pattern for tackling complex engineering tasks with AI age
 | **I**mplementation | Team Managers + Specialists | Managers break work into specialist assignments. Specialists implement. |
 
 **The two gates** (R-pause and D-pause) are built into the Director. The Director always stops after research and after design to get human confirmation. This prevents wasted work from building on wrong assumptions.
+
+```mermaid
+flowchart TD
+    Start([You have a task])
+    Start -->|"/research task"| Explore[Explore subagent<br/>gathers codebase facts]
+    Explore --> RDoc[plans/task-slug/<br/>research.md]
+    RDoc --> RGate{{"<b>R-pause</b><br/>Human reviews research"}}
+    RGate -->|Needs more research| Explore
+    RGate -->|Approved| DCmd["/d task"]
+    DCmd --> Director1[Director reads registry<br/>+ research]
+    Director1 --> Design[design.md<br/>current state, desired state,<br/>constraints, decisions]
+    Design --> DGate{{"<b>D-pause</b><br/>Human reviews design"}}
+    DGate -->|Wrong patterns chosen| Director1
+    DGate -->|Approved| Plan[plan.md<br/>objective, tasks,<br/>order, success criteria]
+    Plan --> Delegate[Director delegates<br/>to Team Managers]
+    Delegate --> Implement[Managers + Specialists<br/>implement in parallel]
+    Implement --> Synth[Director synthesizes<br/>3–5 sentence summary]
+    Synth --> End([Done])
+
+    classDef gate fill:#fff4d6,stroke:#d4a017,color:#000,stroke-width:2px
+    classDef artifact fill:#f0f0f0,stroke:#666,color:#000
+    classDef cmd fill:#e0f2ff,stroke:#0066cc,color:#000
+
+    class RGate,DGate gate
+    class RDoc,Design,Plan artifact
+    class Explore,DCmd cmd
+```
+
+The two yellow gates are the load-bearing parts. Without them, the agents will happily build on wrong assumptions. The pauses force you to read the artifacts and correct course before any code is touched.
 
 ---
 
@@ -55,6 +123,32 @@ Some agents in this workflow run in **worktree isolation** — Claude Code spins
 ---
 
 ## Setup
+
+```mermaid
+flowchart TD
+    Start([Want to use this boilerplate])
+    Start --> Choice{New project or<br/>existing codebase?}
+    Choice -->|Existing codebase| Existing["cp -r .claude/<br/>into your repo"]
+    Choice -->|New project| NewChoice{GitHub template<br/>or manual clone?}
+    NewChoice -->|Template button| GH["Use this template<br/>on GitHub"]
+    NewChoice -->|Manual| Manual[git clone +<br/>reset history]
+    Existing --> Config[Configure 4 things]
+    GH --> Config
+    Manual --> Config
+    Config --> C1[1. Name the Director]
+    C1 --> C2[2. Fill registry.md]
+    C2 --> C3[3. Create team files<br/>from _templates/]
+    C3 --> C4[4. Update routing table]
+    C4 --> Ready([Run /research or /d])
+
+    classDef terminal fill:#d0ffd0,stroke:#008800,color:#000
+    classDef choice fill:#fff4d6,stroke:#d4a017,color:#000
+    classDef config fill:#e0f2ff,stroke:#0066cc,color:#000
+
+    class Start,Ready terminal
+    class Choice,NewChoice choice
+    class C1,C2,C3,C4 config
+```
 
 Choose the path that matches your situation:
 
