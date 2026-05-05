@@ -37,49 +37,108 @@ QRSPI is a structured pattern for tackling complex engineering tasks with AI age
 
 ---
 
+## Prerequisites
+
+- **Claude Code** CLI installed and authenticated (`claude` in your PATH)
+- A git repository (new or existing) — Claude Code agents operate on the working tree
+- A `plans/` directory will be created automatically at your repo root when you first run `/research` or `/d`; add it to `.gitignore` if you don't want plans committed
+
+---
+
 ## Setup
 
-### 1. Clone into your project
+Choose the path that matches your situation:
+
+- [Adding to an existing codebase](#adding-to-an-existing-codebase)
+- [Starting a new project from scratch](#starting-a-new-project-from-scratch)
+
+Then continue with [Configuring for your project](#configuring-for-your-project).
+
+---
+
+### Adding to an existing codebase
 
 Copy the `.claude/` directory into your repo root:
 
 ```bash
-cp -r claude-agent-boilerplate/.claude /path/to/your-project/
+cp -r /path/to/claude-agent-boilerplate/.claude /path/to/your-project/
 ```
 
-Or use this repo as a GitHub template.
+If your project already has a `.claude/` directory, merge selectively — the key directories to add are `.claude/commands/` and `.claude/agents/`.
 
-### 2. Fill in four files
+Then add `plans/` to your `.gitignore` if you don't want research and design docs committed:
 
-| File | What to fill in |
-|------|----------------|
-| `.claude/agents/registry.md` | Your actual teams and specialists |
-| `.claude/agents/director.md` routing table | Map task types → your team managers |
-| `.claude/agents/_templates/manager.md` | Copy + fill in once per team |
-| `.claude/agents/_templates/specialist.md` | Copy + fill in once per specialist |
+```bash
+echo "plans/" >> .gitignore
+```
 
-Everything else — the QRSPI flow, research command, progress.md pattern — works out of the box.
+---
 
-### 3. Create your team files
+### Starting a new project from scratch
 
-For each team, create a manager file and specialist files:
+**Option A — GitHub template (recommended)**
+
+1. On GitHub, open this repo and click **"Use this template" → "Create a new repository"**
+2. Clone your new repo locally
+3. Add your project's source code alongside the `.claude/` directory
+4. Continue with [Configuring for your project](#configuring-for-your-project)
+
+**Option B — Manual clone**
+
+```bash
+git clone https://github.com/<your-org>/claude-agent-boilerplate my-new-project
+cd my-new-project
+rm -rf .git && git init   # start fresh history
+git add . && git commit -m "chore: init from claude-agent-boilerplate"
+```
+
+Then add your project source and continue below.
+
+---
+
+### Configuring for your project
+
+**Step 1 — Name the Director**
+
+In `.claude/agents/director.md`, replace `[PROJECT NAME]` at the top with your project name.
+
+**Step 2 — Fill in the registry**
+
+In `.claude/agents/registry.md`, replace the placeholder team sections with your actual teams and specialists. There's a commented example for each field — delete the comments once filled in.
+
+**Step 3 — Create your team files**
+
+For each team, copy the templates and fill them in:
+
+```bash
+# Example: creating an engineering team with two specialists
+mkdir -p .claude/agents/engineering
+cp .claude/agents/_templates/manager.md .claude/agents/engineering/manager.md
+cp .claude/agents/_templates/specialist.md .claude/agents/engineering/frontend-expert.md
+cp .claude/agents/_templates/specialist.md .claude/agents/engineering/backend-expert.md
+```
+
+Every `[placeholder]` in the template is something you fill in. The surrounding structure stays the same. Delete the instruction comments before committing.
+
+A filled-in tree looks like:
 
 ```
 .claude/agents/
   engineering/
-    manager.md          # copy + fill in _templates/manager.md
-    frontend-expert.md  # copy + fill in _templates/specialist.md
+    manager.md
+    frontend-expert.md
     backend-expert.md
   data/
     manager.md
     db-specialist.md
+  _templates/          # keep these for future teams
+    manager.md
+    specialist.md
 ```
 
-Use `_templates/manager.md` and `_templates/specialist.md` as your starting point. Every `[placeholder]` is something you fill in; the surrounding structure stays the same.
+**Step 4 — Update the Director's routing table**
 
-### 4. Update the Director's routing table
-
-In `.claude/agents/director.md`, find the routing table and map your task categories to your managers:
+In `.claude/agents/director.md`, fill in the routing table to map task categories to your managers:
 
 ```markdown
 | If the task involves... | Route to |
@@ -88,9 +147,15 @@ In `.claude/agents/director.md`, find the routing table and map your task catego
 | Database schema        | `data/manager` → db-specialist |
 ```
 
-### 5. Update the Director's project name
+---
 
-In `.claude/agents/director.md`, replace `[PROJECT NAME]` with your project name at the top.
+### Publishing as a GitHub template (optional)
+
+If you want your configured version to be reusable by your team:
+
+1. Push to GitHub
+2. Go to **Settings → General** and check **"Template repository"**
+3. Team members can now click **"Use this template"** to bootstrap new projects with your org's agent setup already configured
 
 ---
 
