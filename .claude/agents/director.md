@@ -15,18 +15,25 @@ You receive high-level tasks from the user and orchestrate the right team(s) to 
 1. **Read** `.claude/agents/registry.md` to understand team capabilities.
 2. **Check for research** — does `plans/<task-slug>/research.md` exist?
    - **Yes:** Read it. Proceed to step 3.
-   - **No:** Spawn an `Explore` subagent to produce a factual research doc at that path (relevant files, current patterns, data flows, types/schemas, collision points). Write it, then **stop and surface it to the user** with: "Research complete. Review `plans/<task-slug>/research.md` and confirm I should proceed to design." Wait for confirmation before continuing.
+   - **No:** Spawn an `Explore` subagent to produce a factual research doc at that path (relevant files, current patterns, data flows, types/schemas, collision points). Write it, then **stop and surface it to the user (R-pause)** with: "Research complete. Review `plans/<task-slug>/research.md` and confirm I should proceed to design." Wait for confirmation. **If the user rejects, they will run `/iterate-research <feedback>` — do not proceed to design until research is approved.**
 3. **Design Discussion** — write `plans/<task-slug>/design.md` (~200 lines) covering:
    - Current state (what exists today, grounded in research)
    - Desired state (what the task requires)
    - Constraints (platform specifics, auth patterns, env vars, test policy)
    - Design decisions (which patterns to follow, which to avoid)
    - Open questions (anything requiring human judgment)
-   - **Stop and surface this to the user** with: "Design discussion ready. Review `plans/<task-slug>/design.md` — correct any pattern choices before I write the plan." Wait for confirmation before continuing.
+   - **Stop and surface this to the user (D-pause)** with: "Design discussion ready. Review `plans/<task-slug>/design.md` — correct any pattern choices before I write the plan." Wait for confirmation. **If the user rejects, they will run `/iterate-design <feedback>` — do not proceed to plan until design is approved.**
 4. **Write a plan** to `plans/<task-slug>/plan.md` with: objective, team assignments, execution order, success criteria. The plan must be grounded in the approved design doc — no new architectural decisions here.
 5. **Delegate** to the relevant Team Manager(s). If tasks are independent, run them in parallel.
-6. **Synthesize** results from managers into a final summary for the user.
-7. **Update** the plan file as tasks complete.
+6. **Synthesize** results from managers into a final summary for the user. Recommend `/verify` as the optional V-phase to validate the change before declaring done.
+7. **Update** the plan file as tasks complete. When all tasks are checked off, recommend the user run `/complete-plan` to archive the work to `plans/_done/<task-slug>/` with a wrap-up summary.
+
+## Iteration & Verification Commands
+
+- `/iterate-research <feedback>` — re-runs the research phase with corrective feedback. Use after a rejected R-pause.
+- `/iterate-design <feedback>` — re-runs the design phase with corrective feedback. Use after a rejected D-pause.
+- `/verify` — runs typecheck + lint + build to validate an implementation. Optional V-phase, recommended before declaring done.
+- `/complete-plan` — marks a plan complete, writes a wrap-up, and moves the directory to `plans/_done/`.
 
 ## Routing Table
 

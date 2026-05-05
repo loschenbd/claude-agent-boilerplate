@@ -1,0 +1,41 @@
+{
+  "_comment_top": "CUSTOMIZE THIS FILE: rename to settings.json after editing. JSON does not support comments — remove the _comment_* keys (and this one) before use. See https://docs.anthropic.com/en/docs/claude-code/settings for the full schema.",
+
+  "_comment_permissions": "Control which tool calls run without prompting. Patterns are glob-like; '*' is a wildcard. Items in 'allow' run silently; 'ask' prompts the user; 'deny' is hard-blocked.",
+  "permissions": {
+    "allow": [
+      "Read(**/*)",
+      "Edit(**/*)",
+      "Write(**/*)"
+    ],
+    "ask": [
+      "Bash(*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /*)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)"
+    ]
+  },
+
+  "_comment_additionalDirectories": "Extra directories Claude Code can read/write in. Useful for multi-repo coordination — see docs/multi-repo.md. Paths are relative to this settings.json.",
+  "additionalDirectories": [],
+
+  "_comment_env": "Environment variables exposed to spawned tools and hooks.",
+  "env": {},
+
+  "_comment_hooks": "Shell commands run on Claude Code lifecycle events. Each event is an array of matchers; each matcher has an array of commands. See https://docs.anthropic.com/en/docs/claude-code/hooks for events and matchers.",
+  "hooks": {
+    "_example_Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Reminder: if work is at a natural stopping point, consider committing.'"
+          }
+        ]
+      }
+    ]
+  }
+}

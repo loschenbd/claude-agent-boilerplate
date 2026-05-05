@@ -1,0 +1,56 @@
+<!-- CUSTOMIZE THIS FILE: Replace placeholders with your project's details.
+     Save it as CLAUDE.md (drop the .template suffix) at your repo root.
+     Claude Code loads CLAUDE.md on every session — keep it concise.
+     Detailed agent definitions live in .claude/agents/. -->
+
+# [PROJECT NAME]
+
+[One-paragraph description of what this project is, who it's for, and why it exists.]
+
+## Stack
+
+- [Language / framework — e.g., "TypeScript, Next.js 15 App Router"]
+- [Database / storage — e.g., "Postgres via Supabase, with PowerSync for offline sync"]
+- [Other key tools — e.g., "Tamagui for universal UI, tRPC for API"]
+
+## Project layout
+
+```
+[src or packages]/    # [what's in here]
+[apps]/               # [what's in here]
+[other dirs]
+```
+
+## How to work in this repo
+
+This repo uses the **QRSPI multi-agent workflow** with human review gates. The setup lives in `.claude/`.
+
+For complex changes:
+
+| Command | What it does |
+|---------|--------------|
+| `/research <task>` | Gather facts about the affected code (no code changes) |
+| `/d <task>` | Director runs the full QRSPI flow: research → design → plan → delegate → synthesize |
+| `/iterate-research <feedback>` | Re-run research with corrective feedback (when you reject the research doc) |
+| `/iterate-design <feedback>` | Re-run design with corrective feedback (when you reject the design doc) |
+| `/verify` | Run typecheck + lint + build to validate a change after implementation |
+| `/complete-plan` | Mark a plan complete and archive it to `plans/_done/` |
+
+For simple changes (one-line fixes, doc tweaks, obvious renames), just edit directly — don't invoke the full pipeline.
+
+The Director reads `.claude/agents/registry.md` to pick teams. Specialists live in `.claude/agents/<team>/`. See `.claude/agents/director.md` for the full flow and `.claude/agents/registry.md` for the team roster.
+
+## Conventions
+
+- [Code style — e.g., "ESLint + Prettier, no manual formatting"]
+- [Imports — e.g., "Use `@my/*` aliases, never relative imports across packages"]
+- [Test policy — e.g., "Type-check + lint only; no automated test suite"]
+- [Commit style — e.g., "Conventional commits: `feat:`, `fix:`, `chore:`, etc."]
+- [Anything else project-specific that an AI working here needs to know]
+
+## Things NOT to do
+
+<!-- These save the most time when made explicit. Examples: -->
+- [Don't bypass type errors with `as any` — fix the underlying type]
+- [Don't add new dependencies without checking existing alternatives in the monorepo]
+- [Don't commit secrets — env vars live in `.env.local` only]

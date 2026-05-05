@@ -7,17 +7,30 @@ A GitHub template for wiring up the **QRSPI multi-agent workflow** in any codeba
 ## What's included
 
 ```
+CLAUDE.md.template            # Project-root config template — what Claude reads on every session
 .claude/
+  settings.json.template      # Permissions, hooks, additionalDirectories template
   commands/
-    research.md     # /research command — research phase of QRSPI
-    d.md            # /d command — launches the Director
+    research.md               # /research — research phase of QRSPI
+    d.md                      # /d — launches the Director
+    iterate-research.md       # /iterate-research — re-run research with feedback
+    iterate-design.md         # /iterate-design — re-run design with feedback
+    verify.md                 # /verify — typecheck/lint/build after implementation
+    complete-plan.md          # /complete-plan — archive a finished plan
   agents/
-    director.md     # Orchestrator: reads registry, delegates, synthesizes
-    registry.md     # Team roster: who owns what
-    comms-agent.md  # Status updates to the user
+    director.md               # Orchestrator: reads registry, delegates, synthesizes
+    registry.md               # Team roster: who owns what
+    comms-agent.md            # Status updates to the user
     _templates/
-      manager.md    # Template for creating a new team manager
-      specialist.md # Template for creating a new domain specialist
+      manager.md              # Template for creating a new team manager
+      specialist.md           # Template for creating a new domain specialist
+  skills/                     # Experimental — same prompts as commands, callable by other agents
+    research/SKILL.md
+    d/SKILL.md
+docs/
+  multi-repo.md               # Coordination repo pattern for multi-repo features
+examples/
+  universal-rn-nextjs-monorepo/  # Worked example: filled-in agents + sample plans/
 ```
 
 ---
@@ -80,28 +93,31 @@ flowchart TD
     Start -->|"/research task"| Explore[Explore subagent<br/>gathers codebase facts]
     Explore --> RDoc[plans/task-slug/<br/>research.md]
     RDoc --> RGate{{"<b>R-pause</b><br/>Human reviews research"}}
-    RGate -->|Needs more research| Explore
+    RGate -->|"/iterate-research feedback"| Explore
     RGate -->|Approved| DCmd["/d task"]
     DCmd --> Director1[Director reads registry<br/>+ research]
     Director1 --> Design[design.md<br/>current state, desired state,<br/>constraints, decisions]
     Design --> DGate{{"<b>D-pause</b><br/>Human reviews design"}}
-    DGate -->|Wrong patterns chosen| Director1
+    DGate -->|"/iterate-design feedback"| Director1
     DGate -->|Approved| Plan[plan.md<br/>objective, tasks,<br/>order, success criteria]
     Plan --> Delegate[Director delegates<br/>to Team Managers]
     Delegate --> Implement[Managers + Specialists<br/>implement in parallel]
     Implement --> Synth[Director synthesizes<br/>3–5 sentence summary]
-    Synth --> End([Done])
+    Synth --> Verify{{"<b>V-phase (optional)</b><br/>/verify — typecheck/lint/build"}}
+    Verify -->|Failures| Implement
+    Verify -->|Pass| Complete["/complete-plan<br/>archive to plans/_done/"]
+    Complete --> End([Done])
 
     classDef gate fill:#fff4d6,stroke:#d4a017,color:#000,stroke-width:2px
     classDef artifact fill:#f0f0f0,stroke:#666,color:#000
     classDef cmd fill:#e0f2ff,stroke:#0066cc,color:#000
 
-    class RGate,DGate gate
+    class RGate,DGate,Verify gate
     class RDoc,Design,Plan artifact
-    class Explore,DCmd cmd
+    class Explore,DCmd,Complete cmd
 ```
 
-The two yellow gates are the load-bearing parts. Without them, the agents will happily build on wrong assumptions. The pauses force you to read the artifacts and correct course before any code is touched.
+The yellow gates are the load-bearing parts. The R-pause and D-pause prevent agents from building on wrong assumptions; the V-phase prevents declaring done before the change actually works. Iteration commands (`/iterate-research`, `/iterate-design`) make the rejection path explicit — one command to redo a phase with corrective feedback.
 
 ---
 
@@ -132,14 +148,16 @@ flowchart TD
     Choice -->|New project| NewChoice{GitHub template<br/>or manual clone?}
     NewChoice -->|Template button| GH["Use this template<br/>on GitHub"]
     NewChoice -->|Manual| Manual[git clone +<br/>reset history]
-    Existing --> Config[Configure 4 things]
+    Existing --> Config[Configure 6 things]
     GH --> Config
     Manual --> Config
-    Config --> C1[1. Name the Director]
-    C1 --> C2[2. Fill registry.md]
-    C2 --> C3[3. Create team files<br/>from _templates/]
-    C3 --> C4[4. Update routing table]
-    C4 --> Ready([Run /research or /d])
+    Config --> C1[1. Customize CLAUDE.md<br/>from template]
+    C1 --> C2[2. Customize settings.json<br/>from template]
+    C2 --> C3[3. Name the Director]
+    C3 --> C4[4. Fill registry.md]
+    C4 --> C5[5. Create team files<br/>from _templates/]
+    C5 --> C6[6. Update routing table]
+    C6 --> Ready([Run /research or /d])
 
     classDef terminal fill:#d0ffd0,stroke:#008800,color:#000
     classDef choice fill:#fff4d6,stroke:#d4a017,color:#000
@@ -147,7 +165,7 @@ flowchart TD
 
     class Start,Ready terminal
     class Choice,NewChoice choice
-    class C1,C2,C3,C4 config
+    class C1,C2,C3,C4,C5,C6 config
 ```
 
 Choose the path that matches your situation:
@@ -161,18 +179,28 @@ Then continue with [Configuring for your project](#configuring-for-your-project)
 
 ### Adding to an existing codebase
 
-Copy the `.claude/` directory into your repo root:
+Copy the `.claude/` directory and the project-root templates into your repo:
 
 ```bash
-cp -r /path/to/claude-agent-boilerplate/.claude /path/to/your-project/
+BOILER=/path/to/claude-agent-boilerplate
+PROJECT=/path/to/your-project
+
+# Agent infrastructure
+cp -r $BOILER/.claude $PROJECT/
+
+# Project-root templates (you'll customize these)
+cp $BOILER/CLAUDE.md.template $PROJECT/
+
+# Optional but recommended docs
+cp -r $BOILER/docs $PROJECT/
 ```
 
-If your project already has a `.claude/` directory, merge selectively — the key directories to add are `.claude/commands/` and `.claude/agents/`.
+If your project already has a `.claude/` directory, merge selectively — the key directories to add are `.claude/commands/`, `.claude/agents/`, and `.claude/skills/`. If you already have a `CLAUDE.md`, merge in the "How to work in this repo" section from the template instead of replacing.
 
-Then add `plans/` to your `.gitignore` if you don't want research and design docs committed:
+Then add `plans/` to your `.gitignore` so the `_done/` history is the only plan directory committed:
 
 ```bash
-echo "plans/" >> .gitignore
+echo "/plans/" >> .gitignore   # only the root plans/, not nested ones in examples/
 ```
 
 ---
@@ -211,15 +239,35 @@ Then add your project source and continue below.
 
 ### Configuring for your project
 
-**Step 1 — Name the Director**
+There are six things to fill in. The first two are foundational; the rest define your teams.
+
+**Step 1 — Project-root `CLAUDE.md`**
+
+Rename `CLAUDE.md.template` → `CLAUDE.md` and replace the placeholders with your project's stack, layout, and conventions. Claude Code reads this on every session — it's how the AI knows the QRSPI workflow exists.
+
+```bash
+mv CLAUDE.md.template CLAUDE.md
+# then edit it
+```
+
+**Step 2 — `.claude/settings.json`**
+
+Rename `settings.json.template` → `settings.json` and customize permissions, hooks, and `additionalDirectories` (for multi-repo). The template uses `_comment_*` keys for inline guidance — JSON doesn't support real comments, so **strip those keys before saving**.
+
+```bash
+cd .claude && mv settings.json.template settings.json
+# then edit it — strip the _comment_* keys
+```
+
+**Step 3 — Name the Director**
 
 In `.claude/agents/director.md`, replace `[PROJECT NAME]` at the top with your project name.
 
-**Step 2 — Fill in the registry**
+**Step 4 — Fill in the registry**
 
 In `.claude/agents/registry.md`, replace the placeholder team sections with your actual teams and specialists. There's a commented example for each field — delete the comments once filled in.
 
-**Step 3 — Create your team files**
+**Step 5 — Create your team files**
 
 For each team, copy the templates and fill them in:
 
@@ -249,7 +297,7 @@ A filled-in tree looks like:
     specialist.md
 ```
 
-**Step 4 — Update the Director's routing table**
+**Step 6 — Update the Director's routing table**
 
 In `.claude/agents/director.md`, fill in the routing table to map task categories to your managers:
 
@@ -274,21 +322,34 @@ If you want your configured version to be reusable by your team:
 
 ## Usage
 
-Once set up, the workflow is:
+### Commands
 
-```
-# Start with research (optional but recommended)
+| Command | When to use |
+|---------|-------------|
+| `/research <task>` | Start of any complex change. Gathers facts; produces `research.md`. No code changes. |
+| `/d <task>` | Run the full QRSPI flow: design → plan → delegate → synthesize. Will pause for your review at R-pause and D-pause. |
+| `/iterate-research <feedback>` | After rejecting `research.md` — re-runs research with corrective feedback. |
+| `/iterate-design <feedback>` | After rejecting `design.md` — re-runs design with corrective feedback. |
+| `/verify` | After implementation — runs typecheck/lint/build and reports failures. Optional V-phase. |
+| `/complete-plan` | After all plan tasks are done — writes a wrap-up and archives the plan to `plans/_done/`. |
+
+### Typical flow
+
+```bash
 /research <describe your task or paste a ticket>
+# review plans/<slug>/research.md
+# if wrong: /iterate-research <feedback>
 
-# Review plans/<task-slug>/research.md, then launch the Director
 /d <your task description>
-```
+# review design.md at the D-pause
+# if wrong: /iterate-design <feedback>
+# review plan.md, confirm
+# implementation runs, Director synthesizes
 
-The Director will:
-1. Check for existing research
-2. Write a design doc and pause for your review
-3. Write an implementation plan and pause for your review
-4. Delegate to teams and synthesize results
+/verify   # optional but recommended
+
+/complete-plan   # archives the work with a wrap-up
+```
 
 ### Resuming interrupted sessions
 
@@ -300,11 +361,13 @@ If a session ends mid-task, the Director writes `plans/<task-slug>/progress.md` 
 
 | What to customize | What to leave alone |
 |-------------------|---------------------|
-| Project name in director.md | QRSPI phase logic (steps 1–7) |
-| Routing table in director.md | R-pause and D-pause gates |
-| registry.md team roster | research.md command structure |
-| Agent files for your teams | comms-agent.md behavior |
-| _templates/ (fill in, then delete comments) | progress.md format |
+| `CLAUDE.md.template` (rename + fill in) | QRSPI phase logic in director.md (steps 1–7) |
+| `.claude/settings.json.template` (rename, strip `_comment_*` keys) | R-pause / D-pause / V-phase gate behavior |
+| Project name in director.md | research.md command structure |
+| Routing table in director.md | iterate-research.md / iterate-design.md / verify.md / complete-plan.md |
+| registry.md team roster | comms-agent.md behavior |
+| Agent files for your teams (from `_templates/`) | progress.md format |
+| Team layout under `.claude/agents/` | Skill format under `.claude/skills/` (still experimental) |
 
 ---
 
@@ -319,11 +382,26 @@ If a session ends mid-task, the Director writes `plans/<task-slug>/progress.md` 
 
 ## Worked example
 
-See [`examples/universal-rn-nextjs-monorepo/`](examples/universal-rn-nextjs-monorepo/) for a real, working configuration of this boilerplate.
+See [`examples/universal-rn-nextjs-monorepo/`](examples/universal-rn-nextjs-monorepo/) for a fully configured version of this boilerplate plus sample artifacts from a real QRSPI run.
 
-It's the actual `.claude/` setup from a universal React Native + Next.js monorepo: 4 teams, 17 specialists, a fully filled-in routing table, and cross-team conventions. Useful when you want to see what "filled in" looks like before adapting the templates to your own project.
+It includes:
+
+- A filled-in `.claude/` for a universal React Native + Next.js monorepo: 4 teams, 17 specialists, complete routing table, cross-team conventions
+- Sample plan artifacts at `examples/.../plans/example-add-csv-export/` — `research.md`, `design.md`, `plan.md`, and `progress.md` for a realistic feature, showing exactly what each QRSPI phase produces
 
 [**→ Browse the example**](examples/universal-rn-nextjs-monorepo/)
+
+---
+
+## Multi-repo workflow
+
+For features spanning multiple repos, see [`docs/multi-repo.md`](docs/multi-repo.md). It covers the **coordination repo pattern** — keeping QRSPI agents in a dedicated `coordination/` repo that drives work across sibling repos via `additionalDirectories`, plus an optional `workspaces/<task-slug>/` worktree layout for parallel tasks.
+
+---
+
+## Skills (experimental)
+
+`.claude/skills/research/SKILL.md` and `.claude/skills/d/SKILL.md` mirror the slash commands in skill format, so other agents/skills can invoke them programmatically (not just the user typing `/research`). The skill format is still evolving, so these are experimental — the slash commands remain the primary entry point.
 
 ---
 

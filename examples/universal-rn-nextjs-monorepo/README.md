@@ -101,5 +101,21 @@ Almost no project-specific content. It's a thin formatting wrapper for status up
 2. **Open `director.md`** — see how the routing table is structured
 3. **Pick one specialist file** that's close to a specialist you'd write — e.g., if you're a backend dev, look at `data/supabase-expert.md` or `engineering/trpc-expert.md`
 4. **Compare to `_templates/specialist.md`** in the boilerplate root to see where the placeholders went
+5. **Read the sample plan artifacts** (below) to see what each QRSPI phase produces in practice
 
 Then go back to your own project and adapt — don't copy.
+
+---
+
+## Sample plan artifacts
+
+[`plans/example-add-csv-export/`](plans/example-add-csv-export/) shows what the four QRSPI artifacts look like for a realistic feature — adding CSV export for the user's gem list. The feature is small enough to fit in a few files but large enough to involve multiple specialists across two teams.
+
+| File | What it shows |
+|------|---------------|
+| [`research.md`](plans/example-add-csv-export/research.md) | What `/research` produces — relevant files with line refs, current patterns, data flow, types, collision points, open questions |
+| [`design.md`](plans/example-add-csv-export/design.md) | What the Director writes after R-pause — current state, desired state, constraints, design decisions, patterns to follow vs. avoid |
+| [`plan.md`](plans/example-add-csv-export/plan.md) | What the Director writes after D-pause — task breakdown by specialist, execution order, success criteria |
+| [`progress.md`](plans/example-add-csv-export/progress.md) | What the Director writes after each phase — end goal, approach, completed/current/next steps, blockers; lets future sessions resume |
+
+The artifacts are illustrative — the file paths and line numbers are plausible for this stack but don't reference a live codebase.
