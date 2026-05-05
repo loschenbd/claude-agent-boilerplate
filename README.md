@@ -317,6 +317,16 @@ If a session ends mid-task, the Director writes `plans/<task-slug>/progress.md` 
 
 ---
 
+## Worked example
+
+See [`examples/gemify-universal/`](examples/gemify-universal/) for a real, working configuration of this boilerplate.
+
+It's the actual `.claude/` setup from a universal React Native + Next.js monorepo: 4 teams, 17 specialists, a fully filled-in routing table, and cross-team conventions. Useful when you want to see what "filled in" looks like before adapting the templates to your own project.
+
+[**→ Browse the example**](examples/gemify-universal/)
+
+---
+
 ## Credits
 
 The QRSPI methodology is inspired by the work of [Dex Horthy](https://github.com/dexhorthy) and [HumanLayer](https://github.com/humanlayer) on structured human-in-the-loop AI agent workflows, with additional thanks to [Jerry Bruns](https://devjerry.me) ([@devjerry0](https://github.com/devjerry0)). This boilerplate is [Benjamin Loschen](https://github.com/loschenbd)'s adaptation of those ideas for Claude Code.
