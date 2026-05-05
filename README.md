@@ -78,13 +78,13 @@ The team structure above is just an example — you define your own teams and sp
 
 QRSPI is a structured pattern for tackling complex engineering tasks with AI agents:
 
-| Phase | Who | What happens | Output | Human in the loop |
-|-------|-----|--------------|--------|-------------------|
-| **Q**uestions | Human (you) | Human-written questions about the task — what to build, constraints, edge cases, anything ambiguous. Passed into the `/r` step so research can target them. | Targeted questions written into the prompt for `/r` | **Fully human.** This phase is your input — there is no agent here. |
-| **R**esearch | `/r` command | Explore subagent gathers facts — files, patterns, data flows, types, collision points. No opinions. | `plans/<slug>/research.md` — facts with file:line citations | **R-pause gate.** Review the research doc and approve before `/d`. If wrong, run `/iterate-research <feedback>` to revise. |
-| **S**pecification / Design | Director | Director writes a design doc. Human reviews and corrects before any code is written. | `plans/<slug>/design.md` — current state, desired state, constraints, decisions | **D-pause gate.** Review the design doc and approve before the plan is written. If wrong, run `/iterate-design <feedback>` to revise. |
-| **P**lan | Director | Director writes a plan grounded in the approved design. | `plans/<slug>/plan.md` — task breakdown, execution order, success criteria | Optional — skim the plan before delegation kicks off. No formal gate. |
-| **I**mplementation | Team Managers + Specialists | Managers break work into specialist assignments. Specialists implement. | Code changes + `plans/<slug>/progress.md` updates after each phase | Optional **V-phase** — run `/verify` to validate (typecheck/lint/build). Then `/complete-plan` to archive with a wrap-up. |
+| Phase | Who | What happens |
+|-------|-----|-------------|
+| **Q**uestions | Human (you) | Human-written questions about the task — what to build, constraints, edge cases, anything ambiguous. Passed into the `/r` step so research can target them. |
+| **R**esearch | `/r` command | Explore subagent gathers facts — files, patterns, data flows, types, collision points. No opinions. |
+| **S**pecification / Design | Director | Director writes a design doc. Human reviews and corrects before any code is written. |
+| **P**lan | Director | Director writes a plan grounded in the approved design. |
+| **I**mplementation | Team Managers + Specialists | Managers break work into specialist assignments. Specialists implement. |
 
 **The two gates** (R-pause and D-pause) are built into the Director. The Director always stops after research and after design to get human confirmation. This prevents wasted work from building on wrong assumptions.
 
