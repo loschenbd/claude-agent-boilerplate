@@ -319,11 +319,11 @@ If a session ends mid-task, the Director writes `plans/<task-slug>/progress.md` 
 
 ## Worked example
 
-See [`examples/gemify-universal/`](examples/gemify-universal/) for a real, working configuration of this boilerplate.
+See [`examples/universal-rn-nextjs-monorepo/`](examples/universal-rn-nextjs-monorepo/) for a real, working configuration of this boilerplate.
 
 It's the actual `.claude/` setup from a universal React Native + Next.js monorepo: 4 teams, 17 specialists, a fully filled-in routing table, and cross-team conventions. Useful when you want to see what "filled in" looks like before adapting the templates to your own project.
 
-[**→ Browse the example**](examples/gemify-universal/)
+[**→ Browse the example**](examples/universal-rn-nextjs-monorepo/)
 
 ---
 
