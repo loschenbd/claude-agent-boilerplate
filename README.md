@@ -43,7 +43,7 @@ flowchart TD
     User -->|"/r"| ResearchCmd[r.md command]
     User -->|"/d"| DCmd[d.md command]
     DCmd --> Director
-    ResearchCmd -.writes.-> Plans[(plans/task-slug/<br/>research.md)]
+    ResearchCmd -.writes.-> Plans[(plans/task-slug/<br/>research, design, plan,<br/>progress.md)]
     Director[Director]
     Director -.reads.-> Registry[(registry.md)]
     Director -.reads/writes.-> Plans
@@ -90,7 +90,7 @@ QRSPI is a structured pattern for tackling complex engineering tasks with AI age
 
 ```mermaid
 flowchart TD
-    Start([You have a task])
+    Start([You have a task<br/>+ <b>Q</b>: targeted questions])
     Start -->|"/r task"| Explore[Explore subagent<br/>gathers codebase facts]
     Explore --> RDoc[plans/task-slug/<br/>research.md]
     RDoc --> RGate{{"<b>R-pause</b><br/>Human reviews research"}}
