@@ -86,7 +86,7 @@ echo "plans/" >> .gitignore
 **Option B — Manual clone**
 
 ```bash
-git clone https://github.com/<your-org>/claude-agent-boilerplate my-new-project
+git clone https://github.com/loschenbd/claude-agent-boilerplate my-new-project
 cd my-new-project
 rm -rf .git && git init   # start fresh history
 git add . && git commit -m "chore: init from claude-agent-boilerplate"
