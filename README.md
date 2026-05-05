@@ -39,9 +39,18 @@ QRSPI is a structured pattern for tackling complex engineering tasks with AI age
 
 ## Prerequisites
 
-- **Claude Code** CLI installed and authenticated (`claude` in your PATH)
-- A git repository (new or existing) — Claude Code agents operate on the working tree
+- **Claude Code** CLI installed and authenticated (`claude` in your PATH) — [install guide](https://docs.anthropic.com/en/docs/claude-code/getting-started)
+- A git repository with **at least one commit** — Claude Code agents that run in worktree isolation mode need a commit to branch from
+- Branch named **`main`** (not `master`) — recommended for consistency with GitHub defaults and Claude Code tooling
 - A `plans/` directory will be created automatically at your repo root when you first run `/research` or `/d`; add it to `.gitignore` if you don't want plans committed
+
+### A note on git worktrees
+
+Some agents in this workflow run in **worktree isolation** — Claude Code spins up a temporary git worktree so the agent's changes don't touch your working tree until you review them. The runner creates and cleans up worktrees automatically. What you need to support this:
+
+1. A git repo with at least one commit (so there's a base to branch from)
+2. A reasonably clean working tree before launching agents — uncommitted changes in your working tree won't appear in the agent's isolated copy
+3. If the agent makes changes, the worktree path and branch are returned so you can review and merge on your own terms
 
 ---
 
@@ -88,8 +97,18 @@ echo "plans/" >> .gitignore
 ```bash
 git clone https://github.com/loschenbd/claude-agent-boilerplate my-new-project
 cd my-new-project
-rm -rf .git && git init   # start fresh history
+
+# Start fresh history
+rm -rf .git && git init && git branch -m main
+
+# Initial commit (required — worktree isolation needs at least one commit)
 git add . && git commit -m "chore: init from claude-agent-boilerplate"
+
+# Set up a remote (recommended for team use and pushing agent worktree branches)
+gh repo create my-new-project --public --source . --remote origin --push
+# or manually:
+# git remote add origin https://github.com/<you>/my-new-project.git
+# git push -u origin main
 ```
 
 Then add your project source and continue below.
@@ -201,3 +220,11 @@ If a session ends mid-task, the Director writes `plans/<task-slug>/progress.md` 
 - **Be specific in specialist files.** The more concrete the expertise section (file paths, library names, patterns), the better the specialist performs.
 - **Use the Comms Agent.** Wire your managers to call it for milestone updates and blockers — it keeps the user informed without cluttering manager output.
 - **Don't skip the R-pause.** It's tempting to confirm immediately and charge ahead, but reading the research doc catches wrong assumptions before they become wrong implementations.
+
+---
+
+## Credits
+
+The QRSPI methodology and this boilerplate were developed by [Benjamin Loschen](https://github.com/loschenbd).
+
+Built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) by [Anthropic](https://www.anthropic.com) — the agentic coding tool that powers the `/research` and `/d` commands, the Director, and all specialist agents in this workflow.
