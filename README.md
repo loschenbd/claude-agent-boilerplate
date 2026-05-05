@@ -235,47 +235,119 @@ Then add your project source and continue below.
 
 ### Configuring for your project
 
-There are six things to fill in. The first two are foundational; the rest define your teams.
+There are six things to fill in — but you don't have to do them by hand. Each step has a paste-able prompt that hands the work to Claude Code itself. The agent reads the template, inspects your codebase, fills in the placeholders, and asks you about anything it can't infer.
+
+**Want to do all 6 at once?** Paste this in Claude Code and it'll walk through the whole sequence, pausing for your review between steps:
+
+```
+I'm setting up this project with the claude-agent-boilerplate QRSPI
+workflow. Walk through the 6 setup steps from the README's
+"Configuring for your project" section in order: CLAUDE.md,
+.claude/settings.json, Director project name, registry.md,
+team specialist files, and the Director's routing table.
+Pause after each step so I can review before proceeding.
+Read each template at the start of its step and ask me about
+anything you can't determine from the codebase.
+```
+
+Or do them individually:
+
+---
 
 **Step 1 — Project-root `CLAUDE.md`**
 
-Rename `CLAUDE.md.template` → `CLAUDE.md` and replace the placeholders with your project's stack, layout, and conventions. Claude Code reads this on every session — it's how the AI knows the QRSPI workflow exists.
+Renames the template, then fills in the stack, layout, conventions, and "things not to do" sections based on your codebase.
+
+> **Prompt:**
+> ```
+> Set up CLAUDE.md for this project. Read CLAUDE.md.template at the
+> repo root, then look at package.json (or pyproject.toml, Cargo.toml,
+> go.mod, etc.) plus the top-level directory structure to infer the
+> stack, layout, and conventions. Rename the template to CLAUDE.md
+> and fill in the placeholders. Ask me about anything you can't infer
+> from the code — especially "Things NOT to do," which is project
+> context only I know.
+> ```
+
+<details><summary>Manual alternative</summary>
 
 ```bash
 mv CLAUDE.md.template CLAUDE.md
 # then edit it
 ```
 
+</details>
+
+---
+
 **Step 2 — `.claude/settings.json`**
 
-Rename `settings.json.template` → `settings.json` and customize permissions, hooks, and `additionalDirectories` (for multi-repo). The template uses `_comment_*` keys for inline guidance — JSON doesn't support real comments, so **strip those keys before saving**.
+Renames the template, strips the `_comment_*` keys (JSON doesn't support comments), and tightens the permissions block based on what your project actually needs.
+
+> **Prompt:**
+> ```
+> Set up .claude/settings.json. Read .claude/settings.json.template,
+> strip all _comment_* keys (those are human guidance, not real JSON),
+> and tighten the permissions for this project — look at scripts in
+> package.json (or equivalent) to know what Bash commands to add to
+> the allow list. Leave additionalDirectories and hooks empty for
+> now. Save as .claude/settings.json.
+> ```
+
+<details><summary>Manual alternative</summary>
 
 ```bash
 cd .claude && mv settings.json.template settings.json
 # then edit it — strip the _comment_* keys
 ```
 
+</details>
+
+---
+
 **Step 3 — Name the Director**
 
-In `.claude/agents/director.md`, replace `[PROJECT NAME]` at the top with your project name.
+Replaces `[PROJECT NAME]` in `director.md` with the actual project name from `package.json` (or equivalent).
+
+> **Prompt:**
+> ```
+> Replace [PROJECT NAME] in .claude/agents/director.md with the real
+> project name (read from package.json's "name" field, or from
+> CLAUDE.md if you already filled that in).
+> ```
+
+---
 
 **Step 4 — Fill in the registry**
 
-In `.claude/agents/registry.md`, replace the placeholder team sections with your actual teams and specialists. There's a commented example for each field — delete the comments once filled in.
+Drafts a sensible team structure for `registry.md` based on your codebase. **Pauses for your approval before writing** — the registry shape determines everything else.
+
+> **Prompt:**
+> ```
+> Propose a team structure for .claude/agents/registry.md. Read the
+> registry template, look at the codebase to figure out what
+> specializations make sense (frontend, backend, database, CI, etc.),
+> and draft a registry with teams and specialists. Show me the draft
+> for approval BEFORE writing the file. Don't generate the individual
+> specialist files yet — that's the next step.
+> ```
+
+---
 
 **Step 5 — Create your team files**
 
-For each team, copy the templates and fill them in:
+After the registry is approved, generates a `manager.md` and per-specialist files for each team using `_templates/manager.md` and `_templates/specialist.md`.
 
-```bash
-# Example: creating an engineering team with two specialists
-mkdir -p .claude/agents/engineering
-cp .claude/agents/_templates/manager.md .claude/agents/engineering/manager.md
-cp .claude/agents/_templates/specialist.md .claude/agents/engineering/frontend-expert.md
-cp .claude/agents/_templates/specialist.md .claude/agents/engineering/backend-expert.md
-```
-
-Every `[placeholder]` in the template is something you fill in. The surrounding structure stays the same. Delete the instruction comments before committing.
+> **Prompt:**
+> ```
+> Now that registry.md is approved, generate the team files. For
+> each team listed in registry.md, create a manager.md (from
+> .claude/agents/_templates/manager.md) and one file per specialist
+> (from _templates/specialist.md). Fill in every [placeholder] using
+> the registry, CLAUDE.md, and the actual codebase as context.
+> Delete the instruction comments from each generated file before
+> saving.
+> ```
 
 A filled-in tree looks like:
 
@@ -293,9 +365,35 @@ A filled-in tree looks like:
     specialist.md
 ```
 
+<details><summary>Manual alternative</summary>
+
+```bash
+# Example: creating an engineering team with two specialists
+mkdir -p .claude/agents/engineering
+cp .claude/agents/_templates/manager.md .claude/agents/engineering/manager.md
+cp .claude/agents/_templates/specialist.md .claude/agents/engineering/frontend-expert.md
+cp .claude/agents/_templates/specialist.md .claude/agents/engineering/backend-expert.md
+# then fill in every [placeholder]
+```
+
+</details>
+
+---
+
 **Step 6 — Update the Director's routing table**
 
-In `.claude/agents/director.md`, fill in the routing table to map task categories to your managers:
+Fills in the routing table in `director.md` so each task category maps to a real specialist.
+
+> **Prompt:**
+> ```
+> Fill in the routing table in .claude/agents/director.md. Use the
+> team and specialist names from registry.md, and write task-category
+> descriptions that map to each specialist's actual expertise (read
+> the specialist files for their domain). Replace the entire example
+> table — keep the same column structure.
+> ```
+
+The result should look like:
 
 ```markdown
 | If the task involves... | Route to |
