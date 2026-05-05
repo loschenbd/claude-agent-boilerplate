@@ -93,20 +93,15 @@ flowchart TD
     Start([You have a task<br/>+ <b>Q</b>: targeted questions])
     Start -->|"/r task"| Explore[Explore subagent<br/>gathers codebase facts]
     Explore --> RDoc[plans/task-slug/<br/>research.md]
-    RDoc --> RGate{{"<b>R-pause</b><br/>Human reviews research"}}
-    RGate -->|"/iterate-research feedback"| Explore
-    RGate -->|Approved| DCmd["/d task"]
-    DCmd --> Director1[Director reads registry<br/>+ research]
+    RDoc --> RGate{{"<b>R-pause</b> — you review research<br/><i>/iterate-research to revise</i>"}}
+    RGate -->|"/d task"| Director1[Director reads<br/>registry + research]
     Director1 --> Design[design.md<br/>current state, desired state,<br/>constraints, decisions]
-    Design --> DGate{{"<b>D-pause</b><br/>Human reviews design"}}
-    DGate -->|"/iterate-design feedback"| Director1
-    DGate -->|Approved| Plan[plan.md<br/>objective, tasks,<br/>order, success criteria]
-    Plan --> Delegate[Director delegates<br/>to Team Managers]
-    Delegate --> Implement[Managers + Specialists<br/>implement in parallel]
+    Design --> DGate{{"<b>D-pause</b> — you review design<br/><i>/iterate-design to revise</i>"}}
+    DGate -->|approved| Plan[plan.md<br/>objective, tasks,<br/>order, success criteria]
+    Plan --> Implement[Managers + Specialists<br/>implement in parallel]
     Implement --> Synth[Director synthesizes<br/>3–5 sentence summary]
-    Synth --> Verify{{"<b>V-phase (optional)</b><br/>/verify — typecheck/lint/build"}}
-    Verify -->|Failures| Implement
-    Verify -->|Pass| Complete["/complete-plan<br/>archive to plans/_done/"]
+    Synth --> Verify{{"<b>V-phase</b> (optional) — /verify<br/><i>failures → re-implement</i>"}}
+    Verify -->|pass| Complete["/complete-plan<br/>archive to plans/_done/"]
     Complete --> End([Done])
 
     classDef gate fill:#fff4d6,stroke:#d4a017,color:#000,stroke-width:2px
@@ -115,10 +110,10 @@ flowchart TD
 
     class RGate,DGate,Verify gate
     class RDoc,Design,Plan artifact
-    class Explore,DCmd,Complete cmd
+    class Explore,Complete cmd
 ```
 
-The yellow gates are the load-bearing parts. The R-pause and D-pause prevent agents from building on wrong assumptions; the V-phase prevents declaring done before the change actually works. Iteration commands (`/iterate-research`, `/iterate-design`) make the rejection path explicit — one command to redo a phase with corrective feedback.
+The yellow gates are the load-bearing parts. The R-pause and D-pause prevent agents from building on wrong assumptions; the V-phase prevents declaring done before the change actually works. Each gate node carries its iteration/failure path as an italic hint — one command (`/iterate-research`, `/iterate-design`) to redo a phase, or send `/verify` failures back into implementation.
 
 ---
 
