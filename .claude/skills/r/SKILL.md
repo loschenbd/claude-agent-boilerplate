@@ -1,9 +1,9 @@
 ---
-name: research
+name: r
 description: Run a focused research pass on the codebase before any planning or implementation. Use when starting a complex change to gather facts about the affected area without making code changes. Produces a research.md doc with file references, current patterns, data flows, types, and collision points.
 ---
 
-> **Experimental.** This skill mirrors the `/research` slash command and is provided so other agents/skills can invoke research programmatically. The slash command remains the primary entry point for users.
+> **Experimental.** This skill mirrors the `/r` slash command and is provided so other agents/skills can invoke research programmatically. The slash command remains the primary entry point for users.
 
 You are in the **Research phase** of QRSPI. Your job is to gather objective facts about the codebase — no recommendations, no design opinions, no code changes.
 

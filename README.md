@@ -1,6 +1,6 @@
 # Claude Agent Boilerplate
 
-A GitHub template for wiring up the **QRSPI multi-agent workflow** in any codebase. Drop it in, fill in four files, and you get a working `/research` + `/d` pipeline powered by Claude Code agents.
+A GitHub template for wiring up the **QRSPI multi-agent workflow** in any codebase. Drop it in, fill in four files, and you get a working `/r` + `/d` pipeline powered by Claude Code agents.
 
 ---
 
@@ -11,7 +11,7 @@ CLAUDE.md.template            # Project-root config template — what Claude rea
 .claude/
   settings.json.template      # Permissions, hooks, additionalDirectories template
   commands/
-    research.md               # /research — research phase of QRSPI
+    r.md                      # /r — research phase of QRSPI
     d.md                      # /d — launches the Director
     iterate-research.md       # /iterate-research — re-run research with feedback
     iterate-design.md         # /iterate-design — re-run design with feedback
@@ -25,7 +25,7 @@ CLAUDE.md.template            # Project-root config template — what Claude rea
       manager.md              # Template for creating a new team manager
       specialist.md           # Template for creating a new domain specialist
   skills/                     # Experimental — same prompts as commands, callable by other agents
-    research/SKILL.md
+    r/SKILL.md
     d/SKILL.md
 docs/
   multi-repo.md               # Coordination repo pattern for multi-repo features
@@ -40,7 +40,7 @@ examples/
 ```mermaid
 flowchart TD
     User((You))
-    User -->|"/research"| ResearchCmd[research.md command]
+    User -->|"/r"| ResearchCmd[r.md command]
     User -->|"/d"| DCmd[d.md command]
     DCmd --> Director
     ResearchCmd -.writes.-> Plans[(plans/task-slug/<br/>research.md)]
@@ -80,7 +80,7 @@ QRSPI is a structured pattern for tackling complex engineering tasks with AI age
 
 | Phase | Who | What happens |
 |-------|-----|-------------|
-| **R**esearch | `/research` command | Explore subagent gathers facts — files, patterns, data flows, types, collision points. No opinions. |
+| **R**esearch | `/r` command | Explore subagent gathers facts — files, patterns, data flows, types, collision points. No opinions. |
 | **Q**uestions / **D**esign | Director | Director writes a design doc. Human reviews and corrects before any code is written. |
 | **S**pecification / **P**lan | Director | Director writes a plan grounded in the approved design. |
 | **I**mplementation | Team Managers + Specialists | Managers break work into specialist assignments. Specialists implement. |
@@ -90,7 +90,7 @@ QRSPI is a structured pattern for tackling complex engineering tasks with AI age
 ```mermaid
 flowchart TD
     Start([You have a task])
-    Start -->|"/research task"| Explore[Explore subagent<br/>gathers codebase facts]
+    Start -->|"/r task"| Explore[Explore subagent<br/>gathers codebase facts]
     Explore --> RDoc[plans/task-slug/<br/>research.md]
     RDoc --> RGate{{"<b>R-pause</b><br/>Human reviews research"}}
     RGate -->|"/iterate-research feedback"| Explore
@@ -126,7 +126,7 @@ The yellow gates are the load-bearing parts. The R-pause and D-pause prevent age
 - **Claude Code** CLI installed and authenticated (`claude` in your PATH) — [install guide](https://docs.anthropic.com/en/docs/claude-code/getting-started)
 - A git repository with **at least one commit** — Claude Code agents that run in worktree isolation mode need a commit to branch from
 - Branch named **`main`** (not `master`) — recommended for consistency with GitHub defaults and Claude Code tooling
-- A `plans/` directory will be created automatically at your repo root when you first run `/research` or `/d`; add it to `.gitignore` if you don't want plans committed
+- A `plans/` directory will be created automatically at your repo root when you first run `/r` or `/d`; add it to `.gitignore` if you don't want plans committed
 
 ### A note on git worktrees
 
@@ -157,7 +157,7 @@ flowchart TD
     C3 --> C4[4. Fill registry.md]
     C4 --> C5[5. Create team files<br/>from _templates/]
     C5 --> C6[6. Update routing table]
-    C6 --> Ready([Run /research or /d])
+    C6 --> Ready([Run /r or /d])
 
     classDef terminal fill:#d0ffd0,stroke:#008800,color:#000
     classDef choice fill:#fff4d6,stroke:#d4a017,color:#000
@@ -326,7 +326,7 @@ If you want your configured version to be reusable by your team:
 
 | Command | When to use |
 |---------|-------------|
-| `/research <task>` | Start of any complex change. Gathers facts; produces `research.md`. No code changes. |
+| `/r <task>` | Start of any complex change. Gathers facts; produces `research.md`. No code changes. |
 | `/d <task>` | Run the full QRSPI flow: design → plan → delegate → synthesize. Will pause for your review at R-pause and D-pause. |
 | `/iterate-research <feedback>` | After rejecting `research.md` — re-runs research with corrective feedback. |
 | `/iterate-design <feedback>` | After rejecting `design.md` — re-runs design with corrective feedback. |
@@ -336,7 +336,7 @@ If you want your configured version to be reusable by your team:
 ### Typical flow
 
 ```bash
-/research <describe your task or paste a ticket>
+/r <describe your task or paste a ticket>
 # review plans/<slug>/research.md
 # if wrong: /iterate-research <feedback>
 
@@ -401,7 +401,7 @@ For features spanning multiple repos, see [`docs/multi-repo.md`](docs/multi-repo
 
 ## Skills (experimental)
 
-`.claude/skills/research/SKILL.md` and `.claude/skills/d/SKILL.md` mirror the slash commands in skill format, so other agents/skills can invoke them programmatically (not just the user typing `/research`). The skill format is still evolving, so these are experimental — the slash commands remain the primary entry point.
+`.claude/skills/r/SKILL.md` and `.claude/skills/d/SKILL.md` mirror the slash commands in skill format, so other agents/skills can invoke them programmatically (not just the user typing `/r`). The skill format is still evolving, so these are experimental — the slash commands remain the primary entry point.
 
 ---
 
@@ -409,4 +409,4 @@ For features spanning multiple repos, see [`docs/multi-repo.md`](docs/multi-repo
 
 The QRSPI methodology is inspired by the work of [Dex Horthy](https://github.com/dexhorthy) and [HumanLayer](https://github.com/humanlayer) on structured human-in-the-loop AI agent workflows, with additional thanks to [Jerry Bruns](https://devjerry.me) ([@devjerry0](https://github.com/devjerry0)). This boilerplate is [Benjamin Loschen](https://github.com/loschenbd)'s adaptation of those ideas for Claude Code.
 
-Built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) by [Anthropic](https://www.anthropic.com) — the agentic coding tool that powers the `/research` and `/d` commands, the Director, and all specialist agents in this workflow.
+Built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code) by [Anthropic](https://www.anthropic.com) — the agentic coding tool that powers the `/r` and `/d` commands, the Director, and all specialist agents in this workflow.

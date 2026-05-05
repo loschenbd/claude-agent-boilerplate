@@ -1,6 +1,6 @@
 # Research: Add CSV Export for User Gem List
 
-> **This is an example artifact.** It demonstrates what `/research` produces in a real QRSPI session for a feature in this stack. The file paths and line numbers are illustrative — they reflect plausible structure for this codebase, not a real codebase.
+> **This is an example artifact.** It demonstrates what `/r` produces in a real QRSPI session for a feature in this stack. The file paths and line numbers are illustrative — they reflect plausible structure for this codebase, not a real codebase.
 
 ## Relevant Files
 

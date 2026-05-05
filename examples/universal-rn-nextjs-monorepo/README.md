@@ -113,7 +113,7 @@ Then go back to your own project and adapt — don't copy.
 
 | File | What it shows |
 |------|---------------|
-| [`research.md`](plans/example-add-csv-export/research.md) | What `/research` produces — relevant files with line refs, current patterns, data flow, types, collision points, open questions |
+| [`research.md`](plans/example-add-csv-export/research.md) | What `/r` produces — relevant files with line refs, current patterns, data flow, types, collision points, open questions |
 | [`design.md`](plans/example-add-csv-export/design.md) | What the Director writes after R-pause — current state, desired state, constraints, design decisions, patterns to follow vs. avoid |
 | [`plan.md`](plans/example-add-csv-export/plan.md) | What the Director writes after D-pause — task breakdown by specialist, execution order, success criteria |
 | [`progress.md`](plans/example-add-csv-export/progress.md) | What the Director writes after each phase — end goal, approach, completed/current/next steps, blockers; lets future sessions resume |

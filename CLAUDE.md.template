@@ -29,7 +29,7 @@ For complex changes:
 
 | Command | What it does |
 |---------|--------------|
-| `/research <task>` | Gather facts about the affected code (no code changes) |
+| `/r <task>` | Gather facts about the affected code (no code changes) |
 | `/d <task>` | Director runs the full QRSPI flow: research → design → plan → delegate → synthesize |
 | `/iterate-research <feedback>` | Re-run research with corrective feedback (when you reject the research doc) |
 | `/iterate-design <feedback>` | Re-run design with corrective feedback (when you reject the design doc) |

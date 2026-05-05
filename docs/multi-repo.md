@@ -44,7 +44,7 @@ The `coordination/` repo holds your QRSPI agents and is where you run Claude Cod
    - `../backend` — Node.js API, tRPC server, Supabase admin
    - `../shared-lib` — types and Zod schemas shared by both
    ```
-4. Run all your `/research`, `/d`, and other commands from `coordination/`. Specialists can read and write across the included repos.
+4. Run all your `/r`, `/d`, and other commands from `coordination/`. Specialists can read and write across the included repos.
 
 ## Worktree pattern for parallel tasks
 
